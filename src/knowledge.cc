@@ -194,9 +194,14 @@ std::string wordle::Knowledge::guess() {
 	for(auto &word: WordList) {
 		auto [entropy, probability] = wordle::computeExpectedEntropy(word, results);
 		double delta = this->lastEntropy - entropy;
-		double score = probability * (double)this->guessCount
-			+ (1.0 - probability) * ((double)this->guessCount + (0.30929145 + 0.29820832 * delta + -0.0088537 * pow(delta, 2)));
 
+		/* double score = probability * (double)this->guessCount
+			+ (1.0 - probability) * ((double)this->guessCount
+				+ (0.25382263 + 5.55009018e-01 * delta + -1.10044394e-01 * pow(delta, 2) + 1.29071566e-02 * pow(delta, 3) + -5.18110556e-04 * pow(delta, 4))
+			); */
+
+		double score = probability * (double)this->guessCount
+			+ (1.0 - probability) * ((double)this->guessCount + (0.42336469 + 0.27196098 * delta + -0.0074404 * pow(delta, 2)));
 		if(score < lowestScore) {
 			lowestScore = score;
 			guess = word;
@@ -285,7 +290,7 @@ void wordle::Knowledge::calculateLastEntropy(std::set<std::string> &words) {
 	for(auto &word: words) {
 		double probability = WordFrequency[word] / total;
 		if(probability > 0) {
-			this->lastEntropy -= probability * log2(probability);
+			this->lastEntropy -= probability * log2fast(probability);
 		}
 	}
 }
